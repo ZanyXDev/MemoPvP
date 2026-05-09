@@ -11,6 +11,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# ------------------------- tune speed buld ----------------------------------
+# 1. Включить Unity Build (объединяет .cpp файлы → меньше компиляций)
+set(CMAKE_UNITY_BUILD ON)
+set(CMAKE_UNITY_BUILD_BATCH_SIZE 4)  # баланс между скоростью и инкрементальностью
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # 2. Отключить избыточную генерацию QML cache в Debug
+    # (если не используете AOT-компиляцию QML в дебаге)
+    set(QT_QMLCACHE_GENERATOR_AOT_COMPILER_ENABLED OFF)
+endif()
+# ----------------------------------------------------------------------------
+
+
 ################################################################################
 
 message(STATUS "[CMAKE] CMAKE_VERSION               = ${CMAKE_VERSION}")
@@ -46,13 +59,26 @@ add_compile_definitions(
     # QT_NO_CAST_TO_ASCII
 )
 
+
 # ----------------------------------------------------------------------------
 # CCache интеграция (если установлен)
 # ----------------------------------------------------------------------------
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+
+    # Нормализация путей для отладочных сборок
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(
+            -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.
+        )
+    endif()
+
+    # Для ccache: установить base_dir через окружение
+    set(ENV{CCACHE_BASEDIR} "${CMAKE_SOURCE_DIR}")
+
     message(STATUS "✓ Using ccache: ${CCACHE_PROGRAM}")
+    message(STATUS "✓ CCACHE_BASEDIR: $ENV{CCACHE_BASEDIR}")
 endif()
 
 # ----------------------------------------------------------------------------
