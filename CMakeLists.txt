@@ -79,6 +79,7 @@ if(CCACHE_PROGRAM)
 
     message(STATUS "✓ Using ccache: ${CCACHE_PROGRAM}")
     message(STATUS "✓ CCACHE_BASEDIR: $ENV{CCACHE_BASEDIR}")
+
 endif()
 
 # ----------------------------------------------------------------------------
@@ -117,8 +118,8 @@ qt_add_resources(${APP_NAME} "images.packs"
 
 set(QML_FILES
     qml/Main.qml
-    qml/Pages/InitPage.qml
-    qml/Engines/BoardManager.qml
+    qml/Pages/InitPage.qml    
+    qml/Pages/TestPage.qml
 )
 
 set(RES_FILES
@@ -130,7 +131,8 @@ qt_add_qml_module(${APP_NAME}
     URI io.github.zanyxdev.memopvp
     VERSION 1.0
     QML_FILES ${QML_FILES}
-    RESOURCES ${RES_FILES}        
+    RESOURCES ${RES_FILES}
+
 )
 
 add_subdirectory(src)

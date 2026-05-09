@@ -47,32 +47,23 @@ ApplicationWindow {
         console.log(`Info: ${AppConfig.buildQtVersion}`)
     }
 
-
-    Page{
-        id:testPage
-         anchors.fill: parent
-         enabled:true
-        Column {
-            Image { source: "image://imagepack/yellow" }
-            Image { source: "image://imagepack/red" }
+    StackView {
+        id: stack
+        anchors.fill: parent
+        InitPage{
+            id:initPage
+            Component.onCompleted: {
+                console.log(initPage)
+            }
         }
+
+        TestPage{
+            id:testPage
+            Component.onCompleted: {
+                console.log(initPage)
+            }
+        }
+        initialItem: testPage
+
     }
-
-    // StackView {
-    //     id: stack
-
-    //     InitPage{
-    //         id:initPage
-    //         Component.onCompleted: {
-    //             console.log(initPage)
-    //         }
-    //     }
-
-    //     initialItem: initPage
-    //     anchors.fill: parent
-    // }
-
-
-
-
 }
