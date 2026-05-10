@@ -16,9 +16,16 @@ Rectangle{
     Loader {
         id: loader
         anchors.fill: parent
+
         source: (root.useShader ? "ShaderFlip.qml" : "SimpleFlip.qml")
     }
 
+    Binding {
+        target: loader.item
+        property: "frontImageSource"
+        value: root.frontImageSource
+        when: loader.status === Loader.Ready
+    }
 
     function toggleFlip() {
         if (loader.item){

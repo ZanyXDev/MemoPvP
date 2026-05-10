@@ -2,10 +2,10 @@ import QtQuick
 import QtQuick.Controls
 
 Rectangle {
-    id: simpleCard
+    id: root
     property alias angle: rot.angle
-    property url frontImageSource: root.frontImageSource
-    property color backColor: root.backColor
+    property alias frontImageSource: frontSide.source
+    property color backColor
     // ✅ syncAngle теперь всегда синхронизирован с rot.angle (в градусах)
     readonly property alias syncAngle: rot.angle
 
@@ -23,8 +23,7 @@ Rectangle {
 
     // Два параллельных элемента: лицевая сторона и задняя, с изменением прозрачности при повороте
     Image {
-        id: frontSide
-        source: frontImageSource
+        id: frontSide        
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         visible: rot.angle <= 90
