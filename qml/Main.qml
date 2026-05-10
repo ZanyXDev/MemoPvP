@@ -16,7 +16,7 @@ ApplicationWindow {
     property var screenHeight: Screen.height
     property var screenAvailableWidth: Screen.desktopAvailableWidth
     property var screenAvailableHeight: Screen.desktopAvailableHeight
-
+    property bool isDebugMode: AppConfig.isDebugMode
     property FontLoader buiraFont: FontLoader {
         id: buiraFont
         source: "qrc:qt/qml/io/github/zanyxdev/memopvp/assets/fonts/Buira/Buira.otf"
