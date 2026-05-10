@@ -10,7 +10,6 @@ Item {
     readonly property real syncAngle: shaderEffect.angle * 180 / Math.PI
 
     function toggleFlip() { flipAnimation.start() }
-    signal clicked
 
     // ShaderFlip.qml — исправленный захват текстуры
     ShaderEffectSource {
@@ -86,11 +85,6 @@ Item {
         // Принудительное обновление при изменении свойств
         onAngleChanged: update()
         onPerspChanged: update()
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.clicked()
     }
 
     NumberAnimation {

@@ -6,11 +6,16 @@ import io.github.zanyxdev.memopvp
 
 Rectangle{
     id:root
-    anchors.fill: parent
+
     property url frontImageSource
     property color backColor: "darkblue"
     property bool useShader: false     // по умолчанию не используем шейдер
     signal clicked
+
+    color: "transparent"
+    border.color: "darkgrey"   // ✅ Рамка теперь здесь
+    border.width: 2
+    radius: 6
 
     // угол поворота (0..180)
     // ✅ Read-only привязка: автоматически обновляется при изменении syncAngle
@@ -38,10 +43,15 @@ Rectangle{
         }
     }
 
-    function toggleFlip() {
-        if (loader.item){
-            loader.item.toggleFlip()
+    MouseArea {
+        ///TODO Добавить ховер и другие варианты
+        id:mArea
+        anchors.fill: parent
+        onClicked: {
+            root.clicked()
+            if (loader.item){
+                loader.item.toggleFlip()
+            }
         }
     }
-
 }

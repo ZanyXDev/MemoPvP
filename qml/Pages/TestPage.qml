@@ -40,24 +40,15 @@ Page{
                 Repeater{
                     id:gridRepeater
                     model:GameEngine.cellsInBoard;
-                    delegate: Rectangle{
-                        height: 82
-                        width:  82
-                        radius: 4
-                        border.color: "darkgrey"
-                        border.width: 2
-                        color:"transparent"
+                    delegate: MemoCard{
+                        Layout.preferredWidth: 82
+                        Layout.preferredHeight: 82
+                        Layout.alignment: Qt.AlignHCenter
 
-                        MemoCard{
-                            id:card
-                            anchors.fill: parent
-                            anchors.centerIn: parent
+                        frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"  // ← локальный ресурс
+                        backColor: "darkblue"
+                        useShader: root.useShader
 
-                            frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"  // ← локальный ресурс
-                            backColor: "darkblue"
-                            useShader: root.useShader
-                            onClicked: card.toggleFlip()
-                        }
                     }
                 }
             }

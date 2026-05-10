@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(ACTIVITY_NAME_STR);
     QCoreApplication::setApplicationVersion(VERSION_STR);
 
-#ifdef QT_DEBUG
+#ifdef QT_DEBUG_MY
     qputenv("QT_LOGGING_RULES",
             "qt.qml.binding.removal.info=true;"
             "qt.qml.imports.debug=true;"
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
             "qt.scenegraph.time.renderloop=true;"
             "qt.rhi=debug;"
             "qt.scenegraph=debug");
-   // QLoggingCategory::setFilterRules(qgetenv("QT_LOGGING_RULES"));
+    QLoggingCategory::setFilterRules(qgetenv("QT_LOGGING_RULES"));
 #endif
 
     QGuiApplication app(argc, argv);
