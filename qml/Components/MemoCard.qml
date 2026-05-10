@@ -4,18 +4,15 @@ import QtQuick.Layouts
 
 import io.github.zanyxdev.memopvp
 
-Rectangle{
+Item{
     id:root
 
     property url frontImageSource
+    property url backImageSource
     property color backColor: "darkblue"
     property bool useShader: false     // по умолчанию не используем шейдер
     signal clicked
 
-    color: "transparent"
-    border.color: "darkgrey"   // ✅ Рамка теперь здесь
-    border.width: 2
-    radius: 6
 
     // угол поворота (0..180)
     // ✅ Read-only привязка: автоматически обновляется при изменении syncAngle
@@ -30,7 +27,7 @@ Rectangle{
         onItemChanged: {
             if (item) {
                 item.frontImageSource = root.frontImageSource
-                item.backColor = root.backColor
+                item.backImageSource = root.backImageSource
                 if (appWnd.isDebugMode){
                     // ✅ Проверяем размеры ПОСЛЕ завершения компоновки
                     Qt.callLater(function() {

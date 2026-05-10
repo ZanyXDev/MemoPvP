@@ -4,9 +4,11 @@ import QtQuick.Controls
 Item {
     id: root
     anchors.fill: parent
+
     property alias angle: rot.angle
     property alias frontImageSource: frontSide.source
-    property color backColor
+    property alias backImageSource: backSide.source
+
     // ✅ syncAngle теперь всегда синхронизирован с rot.angle (в градусах)
     readonly property alias syncAngle: rot.angle
 
@@ -29,23 +31,34 @@ Item {
     Image {
         id: frontSide
         anchors.fill: parent
-        fillMode: Image.PreserveAspectCrop
+        anchors.margins: 2
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        sourceSize: Qt.size(root.width , root.height)
         visible: rot.angle <= 90
         opacity: 1 - Math.abs(rot.angle - 0) / 90  // плавное исчезновение
-
     }
 
-    Rectangle {
+    Image {
         id: backSide
         anchors.fill: parent
-        color: backColor
-        border.color: "darkgrey"
-        border.width: 2
-        radius: 6
-
+        anchors.margins: 2
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        sourceSize: Qt.size(root.width , root.height)
         visible: rot.angle >= 90
         opacity: (rot.angle - 90) / 90
     }
+
+    Rectangle{
+        id:borderRect
+        anchors.fill: parent
+        color: "transparent"
+        border.color: "darkgrey"   // ✅ Рамка теперь здесь
+        border.width: 2
+        radius: 6
+    }
+
     NumberAnimation {
         id: flipSimpleAnimation
         target: rot
