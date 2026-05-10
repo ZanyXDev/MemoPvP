@@ -9,7 +9,7 @@ Item{
 
     property url frontImageSource
     property url backImageSource
-    property color backColor: "darkblue"
+    property bool showBackSide: true
     property bool useShader: false     // по умолчанию не используем шейдер
     signal clicked
 
@@ -26,6 +26,7 @@ Item{
         // ✅ Передаем свойства сразу при создании элемента
         onItemChanged: {
             if (item) {
+                item.angle = root.showBackSide ? 180 : 0
                 item.frontImageSource = root.frontImageSource
                 item.backImageSource = root.backImageSource
                 if (appWnd.isDebugMode){
