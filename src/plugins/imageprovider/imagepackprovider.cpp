@@ -46,7 +46,7 @@ void ImagePackProvider::findImagesInPacks()
     const auto flags = F::FilesOnly | F::Recursive;
     qDebug() << Q_FUNC_INFO << "[DEV]  dirEntry:" ;
     for (const auto &dirEntry : QDirListing(":/assets/images/packs", flags)) {
-        qDebug() << dirEntry.filePath() ;
+       // qDebug() << dirEntry.filePath() ;
     }
 }
 

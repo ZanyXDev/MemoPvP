@@ -12,7 +12,7 @@ GameEngine::GameEngine(QObject* parent)
 #ifdef QT_DEBUG
         QStringList paths;
         scanDirectoryPaths("://qt/qml/shadereffects/assets/shaders", paths);
-        qDebug() << "[DEV] All resources:" << paths;
+        //qDebug() << "[DEV] All resources:" << paths;
 #endif
 }
 

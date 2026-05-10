@@ -15,12 +15,20 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(ACTIVITY_NAME_STR);
     QCoreApplication::setApplicationVersion(VERSION_STR);
 
+#ifdef QT_DEBUG
+    qputenv("QT_LOGGING_RULES",
+            "qt.qml.binding.removal.info=true;"
+            "qt.qml.imports.debug=true;"
+            "qt.scenegraph.time.renderer=true;"
+            "qt.scenegraph.time.renderloop=true;"
+            "qt.rhi=debug;"
+            "qt.scenegraph=debug");
+   // QLoggingCategory::setFilterRules(qgetenv("QT_LOGGING_RULES"));
+#endif
+
     QGuiApplication app(argc, argv);
 
 #ifdef QT_DEBUG
-    QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
-    QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.imports.debug=true"));
-    // main.cpp
     QFile vertCheck("://qt/qml/shadereffects/assets/shaders/flip.vert.qsb");
     QFile fragCheck("://qt/qml/shadereffects/assets/shaders/flip.frag.qsb");
 
@@ -29,7 +37,7 @@ int main(int argc, char *argv[])
     qInfo() << "Resource list sample:" << QDir(":/").entryList();
 
     qInfo() << "Scene Graph backend:" << QQuickWindow::sceneGraphBackend();
-    // Должно быть: "opengl", "rhi", но НЕ "software"
+
 #endif
 
 #ifdef Q_OS_ANDROID

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 import src.core
 import ImageProviderCore
+import io.github.zanyxdev.memopvp
 
 Page{
     id:root
@@ -49,10 +50,9 @@ Page{
 
                         MemoCard{
                             id:card
-                            property url frontImage: "https://yavuzceliker.github.io/sample-images/image-1021.jpg"
                             anchors.fill: parent
                             anchors.centerIn: parent
-                           // frontImageSource: frontImage
+
                             frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"  // ← локальный ресурс
                             backColor: "darkblue"
                             useShader: root.useShader
