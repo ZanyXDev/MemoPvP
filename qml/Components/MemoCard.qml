@@ -9,10 +9,9 @@ Item{
 
     property url frontImageSource
     property url backImageSource
-    property bool showBackSide: true
-    property bool useShader: false     // по умолчанию не используем шейдер
+    property bool showEmptyCard: false  // Игрок выбрал правильную пару карт, скрываем
+    property bool useShader: false      // по умолчанию не используем шейдер
     signal clicked
-
 
     // угол поворота (0..180)
     // ✅ Read-only привязка: автоматически обновляется при изменении syncAngle
@@ -26,9 +25,9 @@ Item{
         // ✅ Передаем свойства сразу при создании элемента
         onItemChanged: {
             if (item) {
-                item.angle = root.showBackSide ? 180 : 0
                 item.frontImageSource = root.frontImageSource
-                item.backImageSource = root.backImageSource
+                item.backImageSource  = root.backImageSource
+                item.showEmptyCard    = root.showEmptyCard
                 if (appWnd.isDebugMode){
                     // ✅ Проверяем размеры ПОСЛЕ завершения компоновки
                     Qt.callLater(function() {
@@ -45,10 +44,27 @@ Item{
         ///TODO Добавить ховер и другие варианты
         id:mArea
         anchors.fill: parent
+        enabled: (loader.item) && ( !loader.item.isFlippingBack) // Блокируем клик во время авто-возврата
         onClicked: {
-            root.clicked()
             if (loader.item){
-                loader.item.toggleFlip()
+                if (! loader.item.showEmptyCard){
+                    root.clicked()
+                    loader.item.toggleFlip()
+                    autoHideDebugTimer.start()
+                }
+            }
+        }
+    }
+    Timer {
+        id: autoHideDebugTimer
+        interval: 600
+        running: false
+        repeat: false
+        triggeredOnStart: false
+
+        onTriggered: {
+            if (loader.item){
+                loader.item.showEmptyCard = true
             }
         }
     }

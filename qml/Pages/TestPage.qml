@@ -45,8 +45,9 @@ Page{
                         Layout.preferredHeight: 82
                         Layout.alignment: Qt.AlignHCenter
 
-                        frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"  // ← локальный ресурс
-                        backColor: "darkblue"
+                        frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"
+                        backImageSource: "qrc:/assets/images/cardbackside.jpg"
+
                         useShader: root.useShader
 
                     }
