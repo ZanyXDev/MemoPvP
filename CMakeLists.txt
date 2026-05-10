@@ -106,6 +106,7 @@ qt_add_resources(${APP_NAME} "images.packs"
     assets/images/packs/emoji/emoji_0.png
     assets/images/packs/emoji/emoji_1.png
     assets/images/packs/emoji/emoji_2.png
+    assets/images/cardbackside.jpg
 )
 
 set(QML_FILES
