@@ -103,19 +103,17 @@ Item {
         easing.type: Easing.InOutQuad
     }
     Component.onCompleted: {
-        Qt.callLater(function() {
-            console.log("=== ShaderFlip Post-Init ===")
-            console.log("root:", root.width, "x", root.height)
-            console.log("frontTexture:", frontTexture.width, "x", frontTexture.height,
-                        "status:", frontTexture.status)
-            console.log("shaderEffect.vertexShader:", shaderEffect.vertexShader)
-            console.log("shaderEffect.fragmentShader:", shaderEffect.fragmentShader)
+        console.log("=== ShaderFlip Debug ===")
+        console.log("frontTexture.status:", frontTexture.status,
+                    "(0=Null, 1=Ready, 2=Error, 3=Undefined)")
+        console.log("frontTexture.sourceItem.status:",
+                    frontTexture.sourceItem?.status ?? "no sourceItem")
 
-            if (!shaderEffect.vertexShader || shaderEffect.vertexShader.length === 0) {
-                console.error("❌ vertexShader is EMPTY!")
-            }
-            if (frontTexture.width <= 0) {
-                console.error("❌ frontTexture has zero width!")
+
+        // Проверка шейдера после инициализации
+        Qt.callLater(() => {
+            if (shaderEffect.effectVersion === 0) {
+                console.error("❌ ShaderEffect failed to compile!")
             }
         })
     }
