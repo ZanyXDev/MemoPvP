@@ -43,4 +43,21 @@ private:
     BoardGenerator* m_boardGenerator = nullptr;
     bool m_gameModeEasy;
     int m_cellsInBoard;
+
+#ifdef QT_DEBUG
+
+    static void scanDirectoryPaths(const QString& path, QStringList& paths) {
+        QDir dir(path);
+
+        for (const QString& entry : dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+            QString fullPath = path + "/" + entry;
+            paths.append(fullPath);
+
+            QFileInfo info(fullPath);
+            if (info.isDir()) {
+                scanDirectoryPaths(fullPath, paths);
+            }
+        }
+    }
+#endif
 };

@@ -9,6 +9,7 @@ Page{
     id:root
     anchors.fill: parent
     enabled: StackView.status  === StackView.Active
+    property bool useShader : false   ///TODO need gets from GameEngine
     ColumnLayout{
         id:mainLayout
         spacing: 4
@@ -31,7 +32,7 @@ Page{
             border.width: 2
             GridLayout {
                 id: cellGridLayout
-               anchors.centerIn: parent // <-- центрируем сам GridLayout
+                anchors.centerIn: parent // <-- центрируем сам GridLayout
                 columns: GameEngine.gameModeEasy ? 3 : 4
                 rowSpacing: GameEngine.gameModeEasy ? 6 : 4
                 columnSpacing:  GameEngine.gameModeEasy ? 6 : 4
@@ -45,21 +46,44 @@ Page{
                         border.color: "darkgrey"
                         border.width: 2
                         color:"transparent"
+
+                        MemoCard{
+                            id:card
+                            property url frontImage: "https://yavuzceliker.github.io/sample-images/image-1021.jpg"
+                            anchors.fill: parent
+                            anchors.centerIn: parent
+                           // frontImageSource: frontImage
+                            frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"  // ← локальный ресурс
+                            backColor: "darkblue"
+                            useShader: root.useShader
+                            onClicked: card.toggleFlip()
+                        }
                     }
                 }
             }
 
         }
 
-         Button {
+        Button {
             id:easyHardMode
-             Layout.preferredWidth: 60
+            Layout.preferredWidth: 60
             Layout.preferredHeight: 60
             Layout.alignment: Qt.AlignHCenter
             text: GameEngine.gameModeEasy ? qsTr("EASY"): qsTr("HARD")
-            // ✅ Правильно:
+
             onClicked: {
                 GameEngine.gameModeEasy = !GameEngine.gameModeEasy
+            }
+        }
+        Button {
+            id:useShader
+            Layout.preferredWidth: 60
+            Layout.preferredHeight: 60
+            Layout.alignment: Qt.AlignHCenter
+            text: root.useShader ? qsTr("Shader"): qsTr("Software")
+
+            onClicked: {
+                root.useShader= !root.useShader
             }
         }
         Item{
@@ -71,5 +95,4 @@ Page{
     Component.onCompleted: {
         console.log(`TestPage onCompleted`)
     }
-
 }

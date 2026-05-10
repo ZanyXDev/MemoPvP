@@ -9,6 +9,11 @@ GameEngine::GameEngine(QObject* parent)
     , m_gameModeEasy (true)
     , m_cellsInBoard(12)
 {
+#ifdef QT_DEBUG
+        QStringList paths;
+        scanDirectoryPaths("://qt/qml/shadereffects/assets/shaders", paths);
+        qDebug() << "[DEV] All resources:" << paths;
+#endif
 }
 
 

@@ -11,12 +11,6 @@
 ImagePackProvider::ImagePackProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
-
-#ifdef QT_DEBUG
-    QDir dir(":/assets/images/packs/animals");
-    QStringList imagesList = dir.entryList(QStringList("*.png"));
-    qDebug() << "[DEV]  imagesList:" << imagesList;
-#endif
     this->findImagesInPacks();
 }
 

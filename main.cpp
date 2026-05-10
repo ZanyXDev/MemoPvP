@@ -6,6 +6,7 @@
 #ifdef QT_DEBUG
 #include <QtCore/QLoggingCategory>
 #include <QDir>
+#include <QQuickWindow>
 #endif
 
 int main(int argc, char *argv[])
@@ -19,6 +20,16 @@ int main(int argc, char *argv[])
 #ifdef QT_DEBUG
     QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
     QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.imports.debug=true"));
+    // main.cpp
+    QFile vertCheck("://qt/qml/shadereffects/assets/shaders/flip.vert.qsb");
+    QFile fragCheck("://qt/qml/shadereffects/assets/shaders/flip.frag.qsb");
+
+    qInfo() << "Vertex shader exists:" << vertCheck.exists();
+    qInfo() << "Fragment shader exists:" << fragCheck.exists();
+    qInfo() << "Resource list sample:" << QDir(":/").entryList();
+
+    qInfo() << "Scene Graph backend:" << QQuickWindow::sceneGraphBackend();
+    // Должно быть: "opengl", "rhi", но НЕ "software"
 #endif
 
 #ifdef Q_OS_ANDROID

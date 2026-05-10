@@ -13,7 +13,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # ------------------------- tune speed buld ----------------------------------
 # 1. Включить Unity Build (объединяет .cpp файлы → меньше компиляций)
-set(CMAKE_UNITY_BUILD ON)
+set(CMAKE_UNITY_BUILD OFF)
 set(CMAKE_UNITY_BUILD_BATCH_SIZE 4)  # баланс между скоростью и инкрементальностью
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -82,17 +82,9 @@ if(CCACHE_PROGRAM)
 
 endif()
 
-# ----------------------------------------------------------------------------
-# QTest интеграция
-# ----------------------------------------------------------------------------
-set(BUILD_TEST ON)
-if (BUILD_TEST)
-    enable_testing()
-    # Добавляем подпроект с тестами
-    add_subdirectory(tests)
-endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+
+find_package(Qt6 REQUIRED COMPONENTS Quick ShaderTools)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -120,6 +112,9 @@ set(QML_FILES
     qml/Main.qml
     qml/Pages/InitPage.qml    
     qml/Pages/TestPage.qml
+    qml/Components/MemoCard.qml
+    qml/Components/ShaderFlip.qml
+    qml/Components/SimpleFlip.qml
 )
 
 set(RES_FILES
@@ -133,6 +128,18 @@ qt_add_qml_module(${APP_NAME}
     QML_FILES ${QML_FILES}
     RESOURCES ${RES_FILES}
 
+)
+
+qt6_add_shaders(${APP_NAME} "shaders"
+    PRECOMPILE
+    BATCHABLE
+    # OPTIMIZED
+
+    PREFIX
+        "/qt/qml/shadereffects"
+    FILES
+        assets/shaders/flip.frag
+        assets/shaders/flip.vert
 )
 
 add_subdirectory(src)
@@ -156,6 +163,16 @@ if(ANDROID)
     qt_add_android_permission(${CMAKE_PROJECT_NAME}
         NAME android.permission.ACCESS_COARSE_LOCATION
     )
+endif()
+
+# ----------------------------------------------------------------------------
+# QTest интеграция
+# ----------------------------------------------------------------------------
+set(BUILD_TEST ON)
+if (BUILD_TEST)
+    enable_testing()
+    # Добавляем подпроект с тестами
+    add_subdirectory(tests)
 endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
