@@ -50,7 +50,7 @@ Item{
                 if (! loader.item.showEmptyCard){
                     root.clicked()
                     loader.item.toggleFlip()
-                    autoHideDebugTimer.start()
+                    //autoHideDebugTimer.start()
                 }
             }
         }
