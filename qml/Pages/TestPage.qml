@@ -45,7 +45,8 @@ Page{
                         Layout.preferredHeight: 82
                         Layout.alignment: Qt.AlignHCenter
 
-                        frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"
+                        //frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"
+                        frontImageSource:"image://imagepack/animals/1"
                         backImageSource: "qrc:/assets/images/cardbackside.jpg"
 
                         useShader: root.useShader
