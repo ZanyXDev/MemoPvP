@@ -8,8 +8,13 @@ ImageDataManager::ImageDataManager(QObject *parent)
     : QObject(parent)
     , m_packNamesModel(new QStringListModel( this) )
 {
-    qDebug() << "[DEV.plugin] ImageDataManager" <<  Q_FUNC_INFO << this;
+    qDebug() << "[INIT_ORDER] >>> ImageDataManager created at"
+             << QTime::currentTime().toString("hh:mm:ss.zzz")
+             << ", instance:" << this;
 
+    // ✅ Сохраняем указатель атомарно (потокобезопасно)
+    s_instance.storeRelease(this);
+    this->initModel();
 }
 
 QStringListModel *ImageDataManager::packNamesModel() const

@@ -1,20 +1,23 @@
-#include <QPainter>
-#include <QColor>
-#include <QImage>
-
 #include "imagepackprovider.h"
 #include "imagedatamanager.h"
 
 ImagePackProvider::ImagePackProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
-    , m_imageDataManager( new(ImageDataManager))
 {
-    qDebug() << "[DEV.plugin] ImagePackProvider" <<  Q_FUNC_INFO << this;
-    m_imageDataManager->initModel();
+    qDebug().nospace() << "[INIT_ORDER] >>> ImagePackProvider created at "
+                       << QTime::currentTime().toString("hh:mm:ss.zzz")
+                       << ", instance:" << static_cast<void*>(this);
 }
 
 QPixmap ImagePackProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    // ✅ Мгновенный и потокобезопасный доступ к синглтону
+    auto* dataManager = ImageDataManager::instance();
+    if (!dataManager) {
+        qWarning() << "[ImagePackProvider] ImageDataManager not initialized yet!";
+        return QPixmap();
+    }
+
     // Валидация входного параметра
     if (id.isEmpty()) {
         qWarning() << "[ImagePackProvider] Empty id requested";
@@ -36,12 +39,15 @@ QPixmap ImagePackProvider::requestPixmap(const QString &id, QSize *size, const Q
         return QPixmap();
     }
 
-    QString filePath = m_imageDataManager->imageFileName(packName, pictureId);
-    if (filePath.isEmpty()) return QPixmap();
+
+    // ✅ Вызываем метод синглтона
+    QString fileName = dataManager->imageFileName(packName, pictureId);
+
+    if (fileName.isEmpty()) return QPixmap();
 
     QPixmap pixmap;
-    if (!pixmap.load(filePath)) {
-        qWarning() << "[ImagePackProvider] Failed to load image:" << filePath;
+    if (!pixmap.load(fileName)) {
+        qWarning() << "[ImagePackProvider] Failed to load image:" << fileName;
         return QPixmap();
     }
     // Масштабирование, если запрошен другой размер
@@ -66,6 +72,7 @@ QPixmap ImagePackProvider::requestPixmap(const QString &id, QSize *size, const Q
 
     return pixmap;
 }
+
 
 
 

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QtQml>
 #include <QDebug>
 #include <QStringListModel>
+#include <QtQml>
+
+#include <QAtomicPointer> // ✅ Для потокобезопасного доступа из QQuickImageProvider
 
 class ImageDataManager : public QObject
 {
@@ -16,6 +18,9 @@ class ImageDataManager : public QObject
 public:
     explicit ImageDataManager(QObject* parent = nullptr);
     ~ImageDataManager() override = default;
+
+    // ✅ Потокобезопасный доступ к экземпляру синглтона
+    static ImageDataManager* instance() { return s_instance.loadAcquire(); }
 
     QStringListModel *packNamesModel() const;
     QString imageFileName(const QString &pack, int pictureId);
@@ -30,10 +35,12 @@ public:
 
 signals:
     void currentPackNameChanged();
-
     void currentPackImagesCountChanged();
 
 private:
+    // ✅ Атомарный указатель: безопасно читать из любого потока
+    inline static QAtomicPointer<ImageDataManager> s_instance{nullptr};
+
     QStringListModel *m_packNamesModel = nullptr;
     QStringList m_images;
     QStringList m_packs;
