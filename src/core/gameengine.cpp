@@ -5,7 +5,7 @@
 GameEngine::GameEngine(QObject* parent)
     : QObject(parent)
     // 👇 ВАЖНО: передаём `this` как parent. Qt-дерево объектов автоматически удалит модель.
-    , m_boardModel(new BoardModel(this))
+    , m_boardModel(new BoardModel(this))    
     , m_gameModeEasy (true)
     , m_cellsInBoard(12)
 {
@@ -44,3 +44,9 @@ void GameEngine::setCellsInBoard(int newCellsInBoard)
     m_cellsInBoard = newCellsInBoard;
     emit cellsInBoardChanged();
 }
+
+void GameEngine::init()
+{
+
+}
+

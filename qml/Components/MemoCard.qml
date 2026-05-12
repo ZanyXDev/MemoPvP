@@ -14,8 +14,6 @@ Item{
     signal clicked
 
     // угол поворота (0..180)
-    // ✅ Read-only привязка: автоматически обновляется при изменении syncAngle
-    readonly property real angle: loader.item ? loader.item.syncAngle : 0
 
     Loader {
         id: loader
@@ -28,10 +26,10 @@ Item{
                 item.frontImageSource = root.frontImageSource
                 item.backImageSource  = root.backImageSource
                 item.showEmptyCard    = root.showEmptyCard
-                if (appWnd.isDebugMode){
+                if (appWnd.isDebugModeOFF){
                     // ✅ Проверяем размеры ПОСЛЕ завершения компоновки
                     Qt.callLater(function() {
-                        console.log(`[UI.DEBUG] POST-LAYOUT: ` +
+                        console.log(`[UI.DEBUG] MemoCard.qml POST-LAYOUT: ` +
                                     `loader: ${loader.width}×${loader.height}, ` +
                                     `item: ${item.width}×${item.height}`)
                     })

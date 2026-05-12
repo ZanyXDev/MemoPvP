@@ -44,7 +44,10 @@ ApplicationWindow {
         color: "lightgrey"
     }
     Component.onCompleted: {
-        console.log(`Info: ${AppConfig.buildQtVersion}`)
+        if  (appWnd.isDebugMode){
+            console.log(`[DEV.UI.Main] Info: ${AppConfig.buildQtVersion}`)
+            console.log(`[DEV.UI.Main] ImageDataManager: ${ImageDataManager}`)
+        }
     }
 
     StackView {
