@@ -13,14 +13,16 @@ set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt/qml")
 
 qt6_add_qml_module(qmlImageProviderPlugin
     URI "ImageProviderCore"
-    PLUGIN_TARGET qmlImageProviderPlugin    
+    PLUGIN_TARGET qmlImageProviderPlugin
     NO_GENERATE_PLUGIN_SOURCE
     CLASS_NAME ImageProviderPlugin
     OUTPUT_DIRECTORY "${QML_MODULE_OUTPUT_DIR}"  # ✅ Фиксируем путь
     SOURCES
-	imageproviderplugin.h
+        imageproviderplugin.h
         imagepackprovider.h
         imagepackprovider.cpp
+        imagedatamanager.h
+        imagedatamanager.cpp
 )
 
 target_link_libraries(qmlImageProviderPlugin PUBLIC
