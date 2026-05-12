@@ -17,6 +17,10 @@ ApplicationWindow {
     property var screenAvailableWidth: Screen.desktopAvailableWidth
     property var screenAvailableHeight: Screen.desktopAvailableHeight
     property bool isDebugMode: AppConfig.isDebugMode
+
+    property string imagesPackName: ImageDataManager.currentPackName
+    property int imagesInPackCount: ImageDataManager.currentPackImagesCount
+
     property FontLoader buiraFont: FontLoader {
         id: buiraFont
         source: "qrc:qt/qml/io/github/zanyxdev/memopvp/assets/fonts/Buira/Buira.otf"
@@ -46,7 +50,8 @@ ApplicationWindow {
     Component.onCompleted: {
         if  (appWnd.isDebugMode){
             console.log(`[DEV.UI.Main] Info: ${AppConfig.buildQtVersion}`)
-            console.log(`[DEV.UI.Main] ImageDataManager: ${ImageDataManager}`)
+            console.log(`[DEV.UI.Main] ImageDataManager.currentPackName: ${ImageDataManager.currentPackName}`)
+            console.log(`[DEV.UI.Main] ImageDataManager.currentPackImagesCount: ${ImageDataManager.currentPackImagesCount}`)
         }
     }
 
@@ -69,4 +74,6 @@ ApplicationWindow {
         initialItem: testPage
 
     }
+//--------------------- non Visual items -------------------------------------
+
 }

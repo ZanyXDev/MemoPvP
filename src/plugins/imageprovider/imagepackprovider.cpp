@@ -9,6 +9,7 @@ ImagePackProvider::ImagePackProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
     , m_imageDataManager( new(ImageDataManager))
 {
+    qDebug() << "[DEV.plugin] ImagePackProvider" <<  Q_FUNC_INFO << this;
     m_imageDataManager->initModel();
 }
 

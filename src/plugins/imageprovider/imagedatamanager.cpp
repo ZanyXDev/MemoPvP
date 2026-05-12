@@ -48,6 +48,7 @@ int ImageDataManager::imagesInPack(const QString &pack) const
 
 void ImageDataManager::initModel()
 {
+    qDebug() << Q_FUNC_INFO;
     m_packs.clear();
     m_images.clear();
     using F = QDirListing::IteratorFlag;
@@ -63,4 +64,43 @@ void ImageDataManager::initModel()
     }
     ///ToDo check m_packNamesModel setStringList(m_packs) don't append
     m_packNamesModel->setStringList(m_packs);
+    qDebug() << Q_FUNC_INFO
+             << "m_packs.first():" <<m_packs.first();
+    setCurrentPackName(m_packs.first());
 }
+
+QString ImageDataManager::currentPackName() const
+{
+    qDebug() << Q_FUNC_INFO << "this" << this
+             << "m_currentPackName:" << m_currentPackName
+             << "m_packs.count:" << m_packs.count();
+    return m_currentPackName;
+}
+
+void ImageDataManager::setCurrentPackName(const QString &newCurrentPackName)
+{
+    qDebug() << Q_FUNC_INFO
+             << "m_currentPackName:" << m_currentPackName
+             << "newCurrentPackName:" << newCurrentPackName;
+
+    if (m_currentPackName == newCurrentPackName)
+        return;
+    if ( isPackExist(newCurrentPackName) ){
+
+        m_currentPackName = newCurrentPackName;
+        qDebug() << Q_FUNC_INFO << "Pack exist."
+                 << "m_currentPackName:" << m_currentPackName;
+
+        emit currentPackNameChanged();
+        m_currentPackImagesCount = imagesInPack(m_currentPackName);
+        emit currentPackImagesCountChanged();
+    }
+}
+
+int ImageDataManager::currentPackImagesCount() const
+{
+    return m_currentPackImagesCount;
+}
+
+
+

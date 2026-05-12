@@ -14,15 +14,15 @@ class GameEngine : public QObject
     // CONSTANT означает: указатель на модель создаётся раз и навсегда.
     // QML не будет переподписываться на новый сигнал изменения.
     Q_PROPERTY(BoardModel* boardModel READ boardModel CONSTANT)
-
-
     Q_PROPERTY(bool gameModeEasy READ gameModeEasy WRITE setGameModeEasy NOTIFY gameModeEasyChanged FINAL)
     Q_PROPERTY(int cellsInBoard READ cellsInBoard WRITE setCellsInBoard NOTIFY cellsInBoardChanged FINAL)
-
+    Q_PROPERTY(int imagesInPack READ imagesInPack WRITE setImagesInPack NOTIFY imagesInPackChanged FINAL)
 
 public:
     explicit GameEngine(QObject* parent = nullptr);
     ~GameEngine() override = default;
+
+    Q_INVOKABLE void startNewGame();
 
     // Геттер для Q_PROPERTY
     BoardModel* boardModel() const { return m_boardModel; }
@@ -31,12 +31,17 @@ public:
 
     int cellsInBoard() const;
     void setCellsInBoard(int newCellsInBoard);
+    int imagesInPack() const;
+    void setImagesInPack(int newImagesInPack);
+
 signals:
     void imagePacksChanged();
 
     void gameModeEasyChanged();
 
     void cellsInBoardChanged();
+
+    void imagesInPackChanged();
 
 private:
     BoardModel* m_boardModel = nullptr;
@@ -60,4 +65,5 @@ private:
     }
 #endif
     void init();
+    int m_imagesInPack;
 };
