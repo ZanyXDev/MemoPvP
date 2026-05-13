@@ -85,6 +85,27 @@ qt_standard_project_setup(REQUIRES 6.10)
 add_subdirectory(app)
 add_subdirectory(plugins)
 
+## Android
+if(ANDROID)
+    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+        #QT_ANDROID_ABIS "armeabi-v7a;arm64-v8a;x86;x86_64"
+        #QT_ANDROID_BUILD_ALL_ABIS ON
+        # Minimal version Android 8.0
+        QT_ANDROID_MIN_SDK_VERSION 26
+        QT_ANDROID_TARGET_SDK_VERSION 36
+        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android/"
+    )
+    qt_add_android_permission(${CMAKE_PROJECT_NAME}
+        NAME android.permission.BLUETOOTH_SCAN
+        ATTRIBUTES
+            minSdkVersion 31
+            usesPermissionFlags neverForLocation
+    )
+    qt_add_android_permission(${CMAKE_PROJECT_NAME}
+        NAME android.permission.ACCESS_COARSE_LOCATION
+    )
+endif()
+
 # ----------------------------------------------------------------------------
 message(STATUS "[CMAKE] CMAKE_VERSION               = ${CMAKE_VERSION}")
 message(STATUS "[CMAKE] CMAKE_PREFIX_PATH           = ${CMAKE_PREFIX_PATH}")
