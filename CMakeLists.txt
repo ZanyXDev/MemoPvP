@@ -53,7 +53,33 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 # ----------------------------------------------------------------------------
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
+# ----------------------------------------------------------------------------
+# CCache интеграция (если установлен)
+# ----------------------------------------------------------------------------
+find_program(CCACHE_PROGRAM ccache)
+
+if(CCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    # Для ccache: установить base_dir через окружение
+    set(ENV{CCACHE_BASEDIR} "${CMAKE_SOURCE_DIR}")
+
+    # Ключевые настройки для ccache + Qt:
+    set(ENV{CCACHE_COMPRESS} "true")           # сжатие кэша
+    set(ENV{CCACHE_COMPRESSLEVEL} "6")         # баланс скорость/размер
+    set(ENV{CCACHE_MAXSIZE} "10G")             # лимит кэша
+    set(ENV{CCACHE_SLOPPINESS} "pch_defines,time_macros") # для PCH
+
+    # Для Qt MOC: игнорировать временные метки в сгенерированных файлах
+    set(ENV{CCACHE_EXCLUDE} ".*_autogen/mocs_compilation.cpp")
+
+    message(STATUS "✓ Using ccache: ${CCACHE_PROGRAM}")
+    message(STATUS "✓ CCACHE_BASEDIR: $ENV{CCACHE_BASEDIR}")
+    message(STATUS "✓ ccache configured: $ENV{CCACHE_MAXSIZE} max, compression=$ENV{CCACHE_COMPRESSLEVEL}")
+endif()
+
+# ----------------------------------------------------------------------------
+
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick ShaderTools)
 qt_standard_project_setup(REQUIRES 6.10)
 
 add_subdirectory(app)

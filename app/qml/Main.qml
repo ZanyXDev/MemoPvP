@@ -19,7 +19,7 @@ ApplicationWindow {
 
     property FontLoader buiraFont: FontLoader {
         id: buiraFont
-        source: "qrc:qt/qml/io/github/zanyxdev/memopvp/assets/fonts/Buira/Buira.otf"
+        source: "://qt/qml/assets/fonts/Buira/Buira.otf"
     }
 
     // ----- Signal declarations

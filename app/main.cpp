@@ -9,6 +9,22 @@
 #include <QQuickWindow>
 #endif
 
+#ifdef QT_DEBUG
+static void scanDirectoryPaths(const QString& path, QStringList& paths) {
+    QDir dir(path);
+
+    for (const QString& entry : dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+        QString fullPath = path + "/" + entry;
+        paths.append(fullPath);
+
+        QFileInfo info(fullPath);
+        if (info.isDir()) {
+            scanDirectoryPaths(fullPath, paths);
+        }
+    }
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationName(PACKAGE_NAME_STR);
@@ -18,14 +34,13 @@ int main(int argc, char *argv[])
 #ifdef QT_DEBUG
     qputenv("QT_LOGGING_RULES",
             "qt.qml.binding.removal.info=true;"
-            "qt.qml.imports.debug=true;"
-            "qt.scenegraph.time.renderer=true;"
-            "qt.scenegraph.time.renderloop=true;");
+            "qt.qml.imports.debug=true;");
     QLoggingCategory::setFilterRules(qgetenv("QT_LOGGING_RULES"));
+// "qt.scenegraph.time.renderer=true;"
+// "qt.scenegraph.time.renderloop=true;");
 #endif
 
     QGuiApplication app(argc, argv);
-
 
 #ifdef Q_OS_ANDROID
     QNativeInterface::QAndroidApplication::hideSplashScreen(333);
@@ -43,6 +58,11 @@ int main(int argc, char *argv[])
     qInfo() << "Vertex shader exists:" << vertCheck.exists();
     qInfo() << "Fragment shader exists:" << fragCheck.exists();
     qInfo() << "Resource list sample:" << QDir(":/").entryList();
+
+    QStringList paths;
+    scanDirectoryPaths("://qt/qml", paths);
+    qDebug() << "[DEV.Core] All resources:" << paths;
+
 #endif
 
 #ifdef QT_DEBUG
