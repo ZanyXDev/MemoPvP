@@ -105,6 +105,15 @@ if(ANDROID)
         NAME android.permission.ACCESS_COARSE_LOCATION
     )
 endif()
+# ----------------------------------------------------------------------------
+# QTest интеграция
+# ----------------------------------------------------------------------------
+set(BUILD_TEST ON)
+if (BUILD_TEST)
+    enable_testing()
+    # Добавляем подпроект с тестами
+    #add_subdirectory(tests)
+endif()
 
 # ----------------------------------------------------------------------------
 message(STATUS "[CMAKE] CMAKE_VERSION               = ${CMAKE_VERSION}")

@@ -1,1 +1,2 @@
 add_subdirectory(mycounter)
+add_subdirectory(imageprovider)

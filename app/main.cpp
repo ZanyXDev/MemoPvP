@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
     //  Стандартные пути установки Qt
     engine.addImportPath(QLibraryInfo::path(QLibraryInfo::QmlImportsPath));
 #ifdef QT_DEBUG
-    QFile vertCheck("://qt/qml/shadereffects/assets/shaders/flip.vert.qsb");
-    QFile fragCheck("://qt/qml/shadereffects/assets/shaders/flip.frag.qsb");
+    QFile vertCheck("://qt/qml/assets/shaders/flip.vert.qsb");
+    QFile fragCheck("://qt/qml/assets/shaders/flip.frag.qsb");
 
     qInfo() << "Vertex shader exists:" << vertCheck.exists();
     qInfo() << "Fragment shader exists:" << fragCheck.exists();

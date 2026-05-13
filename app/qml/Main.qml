@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 import io.github.zanyxdev.memopvp
 import io.github.zanyxdev.memopvp.myplugin
+import ImageProviderCore
 
 ApplicationWindow {
     id: appWnd
@@ -15,11 +16,11 @@ ApplicationWindow {
     property var screenHeight: Screen.height
     property var screenAvailableWidth: Screen.desktopAvailableWidth
     property var screenAvailableHeight: Screen.desktopAvailableHeight
-    property bool isDebugMode: AppConfig.isDebugMode
+    //property bool isDebugMode: AppConfig.isDebugMode
 
     property FontLoader buiraFont: FontLoader {
         id: buiraFont
-        source: "://qt/qml/assets/fonts/Buira/Buira.otf"
+        source: "qrc:/qt/qml/assets/fonts/Buira/Buira.otf"
     }
 
     // ----- Signal declarations
@@ -34,7 +35,7 @@ ApplicationWindow {
     minimumWidth: width
     // ----- Then comes the other properties. There's no predefined order to these.
     visible: true
-    visibility: (AppConfig.isMobile) ? Window.FullScreen : Window.Windowed
+    visibility: Window.Windowed//(AppConfig.isMobile) ? Window.FullScreen : Window.Windowed
     flags: Qt.Dialog
 
     // ----- Qt provided visual children
@@ -44,15 +45,21 @@ ApplicationWindow {
         color: "lightgrey"
     }
     Component.onCompleted: {
-        if  (appWnd.isDebugMode){
-            console.log(`[DEV.UI.Main] Info: ${AppConfig.buildQtVersion}`)
-        }
+        //if  (appWnd.isDebugMode){
+        //    console.log(`[DEV.UI.Main] Info: ${AppConfig.buildQtVersion}`)
+       // }
     }
 
     Column {
+        anchors.fill: parent
         width: 400; height: 300
         anchors.centerIn: parent
         spacing: 12
+
+        Text {
+            text: "CurrentPackNAme: " + ImageDataManager.currentPackName
+            font.pixelSize: 24
+        }
 
         Text { text: "Counter: " + counter.value; font.pixelSize: 24 }
         Button {
@@ -62,6 +69,12 @@ ApplicationWindow {
         Button {
             text: "Decrement"
             onClicked: counter.value--
+        }
+        Image{
+            id:testImage
+            width: 82
+            height: 82
+            source: "image://imagepack/animals/1"
         }
     }
 
