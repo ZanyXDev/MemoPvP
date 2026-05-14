@@ -7,11 +7,11 @@ qt_add_resources(${APP_NAME} "images"
     PREFIX
         "/qt/qml"
     FILES
-    ../assets/images/packs/animals/animals_0.png
-    ../assets/images/packs/animals/animals_1.png
-    ../assets/images/packs/emoji/emoji_0.png
-    ../assets/images/packs/emoji/emoji_1.png
-    ../assets/images/packs/emoji/emoji_2.png
+    ../assets/images/__animals/animals_0.png
+    ../assets/images/__animals/animals_1.png
+    ../assets/images/__emoji/emoji_0.png
+    ../assets/images/__emoji/emoji_1.png
+    ../assets/images/__emoji/emoji_2.png
     ../assets/images/cardbackside.jpg
     ../assets/images/memory_logo.png
 )
@@ -41,8 +41,7 @@ set(QML_FILES
 qt_add_qml_module(${APP_NAME}
     URI io.github.zanyxdev.memopvp
     VERSION 1.0
-    QML_FILES ${QML_FILES}
-    IMPORTS io.github.zanyxdev.memopvp.myplugin # Линкует хост с плагином на уровне CMake
+    QML_FILES ${QML_FILES}   
 )
 
 # После qt_add_qml_module(...) добавьте:
