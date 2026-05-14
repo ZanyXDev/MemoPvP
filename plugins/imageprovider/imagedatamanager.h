@@ -7,43 +7,78 @@
 
 #include <QAtomicPointer> // ✅ Для потокобезопасного доступа из QQuickImageProvider
 
+/**
+ * @brief The ImageDataManager class
+ * Wrapper для ImagePackProvider
+ * Обрабоатывает пути к фалам изображений из ресурсов по запросу отдает реальный файловый путь
+ */
+
 class ImageDataManager : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
     Q_PROPERTY(QStringListModel* packNamesModel READ packNamesModel CONSTANT)
-    Q_PROPERTY(QString currentPackName READ currentPackName WRITE setCurrentPackName NOTIFY currentPackNameChanged FINAL)
+    Q_PROPERTY(QString currentPackName READ currentPackName  NOTIFY currentPackNameChanged FINAL)
     Q_PROPERTY(int currentPackImagesCount READ currentPackImagesCount NOTIFY currentPackImagesCountChanged FINAL)
-public:
-    explicit ImageDataManager(QObject* parent = nullptr);
-    ~ImageDataManager() override = default;
+public:    
+    ~ImageDataManager() override;
 
+    /**
+     * @brief create
+     * @param qmlEngine not used
+     * @param jsEngine not used
+     * @return static ImageDataManager*
+     * @note Вызывается движком @sa qmlEngine для "ленивого" динамического создания Singleton экземпляра класса
+     */
+    static ImageDataManager* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine);
     // ✅ Потокобезопасный доступ к экземпляру синглтона
-    static ImageDataManager* instance() { return s_instance.loadAcquire(); }
+    static ImageDataManager* instance();
+    // ----------------- getRealFileName ------------------------------------
+    QString getRealFileName(const QString &id);
 
-    QStringListModel *packNamesModel() const;
-    QString imageFileName(const QString &pack, int pictureId);
-    bool isPackExist (const QString &pack) const;
-    int imagesInPack  (const QString &pack) const;
-    void initModel();
-
-    QString currentPackName() const;
-    void setCurrentPackName(const QString &newCurrentPackName);
-
+    QStringListModel *packNamesModel() const;   
+    QString currentPackName() const;    
     int currentPackImagesCount() const;
+
+public slots:
+    void updateCurrentPackData( int current);
 
 signals:
     void currentPackNameChanged();
     void currentPackImagesCountChanged();
 
 private:
+    /**
+     * @brief ImageDataManager
+     * @param parent
+     * @note Приватный конструктор
+     *              Особенности
+     * Объекты такого класса могут создаваться только внутри его методов (например, статических).
+     * Попытка создать объект извне вызовет ошибку компиляции.
+     * Приватный конструктор часто используется вместе с паттернами проектирования и для повышения безопасности кода.
+     *              Когда использовать
+     * Если нужно ограничить создание объектов класса.
+     * Для реализации Singleton.
+     * Для классов-утилит, не требующих состояния.
+     */
+    explicit ImageDataManager(QObject* parent = nullptr);
+
+    void getAllImagesFileName();
+    QString getPackNameFromPatch(const QString &path);
+    QString getImageNameFromPack(const QString &id);
     // ✅ Атомарный указатель: безопасно читать из любого потока
     inline static QAtomicPointer<ImageDataManager> s_instance{nullptr};
+
 
     QStringListModel *m_packNamesModel = nullptr;
     QStringList m_images;
     QStringList m_packs;
+    QStringList m_packsName;
     QString m_currentPackName;
     int m_currentPackImagesCount;
 };
+
+inline ImageDataManager::~ImageDataManager() = default;
+
+inline ImageDataManager *ImageDataManager::instance() { return s_instance.loadAcquire(); }

@@ -19,30 +19,8 @@ QPixmap ImagePackProvider::requestPixmap(const QString &id, QSize *size, const Q
         return QPixmap();
     }
 
-    // Валидация входного параметра
-    if (id.isEmpty()) {
-        qWarning() << "[ImagePackProvider] Empty id requested";
-        return QPixmap();
-    }
-
-    // Разбор ID: "animals/1" -> ["animals", "1"]
-    QStringList parts = id.split("/");
-    if (parts.size() < 2) {
-        qWarning() << "[ImagePackProvider] Invalid id format:" << id << "- expected format: 'packName/index'";
-        return QPixmap();
-    }
-    QString packName = parts[0];
-    bool conversionOk = false;
-    int pictureId = parts[1].toInt(&conversionOk);
-
-    if (!conversionOk || pictureId < 0) {
-        qWarning() << "[ImagePackProvider] Invalid index in id:" << id << "- index must be non-negative integer";
-        return QPixmap();
-    }
-
-
     // ✅ Вызываем метод синглтона
-    QString fileName = dataManager->imageFileName(packName, pictureId);
+    QString fileName = dataManager->getRealFileName( id );
 
     if (fileName.isEmpty()) return QPixmap();
 

@@ -1,9 +1,100 @@
-#include <QDirListing>
 #include <QDir>
+#include <QDirListing>
 #include <QDirIterator>
+#include <QStringList>
 
 #include "imagedatamanager.h"
 
+
+ImageDataManager *ImageDataManager::create(QQmlEngine *qmlEngine, QJSEngine *jsEngine)
+{
+    Q_UNUSED(qmlEngine)
+    Q_UNUSED(jsEngine)
+
+    if (s_instance.loadAcquire() == nullptr) {
+        auto* instance = new ImageDataManager();
+        s_instance.storeRelease(instance);
+        return instance;
+    }
+
+    // Если уже создан, возвращаем существующий (QML этого не ожидает!)
+    qWarning() << "ImageDataManager already exists - returning existing instance";
+    return s_instance.loadAcquire();
+}
+
+QString ImageDataManager::getRealFileName(const QString &id)
+{
+    if ( m_images.isEmpty() ) {
+        qWarning() <<Q_FUNC_INFO << " No images found in resources!";
+        return QString();
+    }
+
+    // Валидация входного параметра
+    if (id.isEmpty()) {
+        qWarning() << Q_FUNC_INFO <<  "Empty id requested !";
+        return QString();
+    }
+
+    QString packName = getPackNameFromPatch( id );
+    if (packName.isEmpty()){
+        // обычное изображение возвращаем путь
+        return m_images.filter(id).at( 0 );
+    }else{
+        // нашли изображение pack
+        QStringList parts = id.split("/");
+        if (parts.size() < 2) {
+            qWarning() << "[ImagePackProvider] Invalid id format:" << id << "- expected format: '__packName/index'";
+            return QString();
+        }
+        bool conversionOk = false;
+        int pictureId = parts[1].toInt(&conversionOk);
+        if (conversionOk){
+            if (pictureId >=0 && pictureId < m_packs.filter("__"+packName ).count() ){
+                return m_packs.filter("__"+packName ).at( pictureId );
+            }
+        }else{
+            qWarning() << "[ImagePackProvider] Invalid id format (index conversion):" << id << "- expected format: '__packName/index'";
+            return QString();
+        }
+    }
+    return QString();
+}
+
+QStringListModel *ImageDataManager::packNamesModel() const
+{
+    return m_packNamesModel;
+}
+
+
+QString ImageDataManager::currentPackName() const
+{
+    return m_currentPackName;
+}
+
+
+int ImageDataManager::currentPackImagesCount() const
+{
+    return m_currentPackImagesCount;
+}
+
+void ImageDataManager::updateCurrentPackData(int current)
+{
+    if (current == -1 ) return;
+
+    if ( m_packsName.count() <= current){
+        QString packNameModel = m_packsName.at( current );
+        if ( packNameModel != m_currentPackName ){
+/// ToDO Что будет если произошла рассинхронизация m_packNamesModel и m_packsName
+                m_currentPackName = packNameModel;
+                m_currentPackImagesCount = m_packs.filter("__"+packNameModel ).count();
+                emit currentPackNameChanged();
+                emit currentPackImagesCountChanged();
+
+        }
+    }
+}
+
+// ------------------------ private -----------------------------------------
 ImageDataManager::ImageDataManager(QObject *parent)
     : QObject(parent)
     , m_packNamesModel(new QStringListModel( this) )
@@ -12,108 +103,57 @@ ImageDataManager::ImageDataManager(QObject *parent)
              << QTime::currentTime().toString("hh:mm:ss.zzz")
              << ", instance:" << this;
 
-    // ✅ Сохраняем указатель атомарно (потокобезопасно)
-    s_instance.storeRelease(this);
-    this->initModel();
+    getAllImagesFileName();
 }
 
-QStringListModel *ImageDataManager::packNamesModel() const
+void ImageDataManager::getAllImagesFileName()
 {
-    return m_packNamesModel;
-}
-
-QString ImageDataManager::imageFileName(const QString &pack, int pictureId)
-{
-    if ( !isPackExist(pack) ) return QString();
-    if ( pictureId >= imagesInPack(pack) ) {
-        qWarning() << "[DEV.plugin] ImageDataManager Index out of range. Requested:" << pictureId
-                   << ", available images in pack" << pack << ":" << imagesInPack(pack);
-        return QString();
-    }
-    return  m_images.filter(pack + "/").at( pictureId);
-}
-
-bool ImageDataManager::isPackExist(const QString &pack) const
-{
-    qDebug() << "[DEV.plugin] ImageDataManager::isPackExist find pack" << pack << "- available packs:" << m_packs;
-    if (  m_packs.isEmpty()) {
-        qCritical() << "[DEV.plugin] ImageDataManager:isPackExist No image packs found in resources!";
-        Q_ASSERT_X(false, "ImageDataManager::initModel", "Broken qresources!!");
-        return false;
-    }
-    return m_packs.contains( pack );
-}
-
-int ImageDataManager::imagesInPack(const QString &pack) const
-{
-    if ( isPackExist(pack) ){
-        return  m_images.filter(pack + "/").count();
-    }
-    return -1;
-}
-
-void ImageDataManager::initModel()
-{    
-    m_packs.clear();
     m_images.clear();
+    m_packs.clear();
+    m_packsName.clear();
 
-    using F = QDirListing::IteratorFlag;
-    const auto flags = F::FilesOnly | F::Recursive;
+    // Определяем список расширений изображений
+    const QStringList imageFilters = { "*.png", "*.jpg", "*.jpeg", "*.svg" };
 
-    for (const auto &dirEntry : QDirListing(":/qt/qml/assets/images/packs", flags)) {
-        // "://qt/qml/assets/images/packs/animals/animals_0.png",
-#ifdef QT_DEBUG
-        qDebug() << "dirEntry.filePath():" <<dirEntry.filePath();
-        qDebug() << "dirEntry.filePath().split(\"/\")" << dirEntry.filePath().split("/");
-#endif
-        m_images.append( dirEntry.filePath() );
-        QStringList parts = dirEntry.filePath().split("/");
+    // Создаём итератор с рекурсивным обходом и фильтрами
+    QDirIterator it(":/qt/qml/assets/images",
+                    imageFilters, QDir::Files, QDirIterator::Subdirectories);
 
-        if ( !parts[6].isEmpty() && !m_packs.contains( parts[6],Qt::CaseInsensitive )){
-            m_packs.append( parts[6] );
+    while (it.hasNext()) {
+        it.next();
+        const QString filePath = it.filePath();
+        QString _packName = getPackNameFromPatch(filePath);
+        if (_packName.isEmpty()){
+            m_images.append( filePath );
+        }else{
+            if ( !m_packsName.contains( _packName,Qt::CaseInsensitive )){
+                m_packsName.append( _packName );
+                m_packs.append( filePath );
+            }
         }
     }
-    if ( ! m_packs.isEmpty()) {
-        m_packNamesModel->setStringList(m_packs);
-        setCurrentPackName(m_packs.first());
+
+    if ( m_images.isEmpty() || m_packs.isEmpty() || m_packsName.empty()) {
+        qCritical() << "[DEV.plugin] ImageDataManager: No images found in resources!";
+        Q_ASSERT_X(false, "ImageDataManager::getAllImagesFileName", "Broken qresources!!");
     }else{
-        qCritical() << "[DEV.plugin] ImageDataManager: No image packs found in resources!";
-        Q_ASSERT_X(false, "ImageDataManager::initModel", "Broken qresources!!");
+        m_packNamesModel->setStringList( m_packsName );
+        updateCurrentPackData( 0 );
     }
 }
 
-QString ImageDataManager::currentPackName() const
+QString ImageDataManager::getPackNameFromPatch(const QString &path)
 {
-    qDebug() << Q_FUNC_INFO << "this" << this
-             << "m_currentPackName:" << m_currentPackName
-             << "m_packs.count:" << m_packs.count();
-    return m_currentPackName;
+    /**
+     * @brief re Поиск названия бандла с картинками
+     *  __ — два символа подчёркивания.
+     * ( начало захвата группы
+     *  [^/]+ — один или более любых символов, кроме /.
+     *  ) конец захвата группы
+     *  / — обязательный слэш после текста.
+     */
+    QRegularExpression re(".*__([^/]+)/.*");
+    QRegularExpressionMatch match = re.match( path );
+    return  match.captured(1);
 }
-
-void ImageDataManager::setCurrentPackName(const QString &newCurrentPackName)
-{
-    qDebug() << Q_FUNC_INFO
-             << "m_currentPackName:" << m_currentPackName
-             << "newCurrentPackName:" << newCurrentPackName;
-
-    if (m_currentPackName == newCurrentPackName)
-        return;
-    if ( isPackExist(newCurrentPackName) ){
-
-        m_currentPackName = newCurrentPackName;
-        qDebug() << Q_FUNC_INFO << "Pack exist."
-                 << "m_currentPackName:" << m_currentPackName;
-
-        emit currentPackNameChanged();
-        m_currentPackImagesCount = imagesInPack(m_currentPackName);
-        emit currentPackImagesCountChanged();
-    }
-}
-
-int ImageDataManager::currentPackImagesCount() const
-{
-    return m_currentPackImagesCount;
-}
-
-
 
