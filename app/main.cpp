@@ -112,10 +112,13 @@ int main(int argc, char *argv[])
     }();
 
     QString appVersion = QCoreApplication::applicationVersion();
+    QString buildQtVersion = QString("This program build with Qt version %1.").arg(QT_VERSION_STR);
+
     QVariantMap initialProperties;
     initialProperties["isMobile"] = QVariant::fromValue(isMobile);
     initialProperties["isDebugMode"] = QVariant::fromValue(isDebugMode);
     initialProperties["appVersion"] = QVariant::fromValue(appVersion);
+    initialProperties["buildQtVersion"] = QVariant::fromValue(buildQtVersion);
 
     engine.setInitialProperties(initialProperties);
     engine.loadFromModule("io.github.zanyxdev.memopvp", "Main");

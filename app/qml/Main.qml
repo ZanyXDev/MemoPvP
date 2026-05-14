@@ -19,6 +19,7 @@ ApplicationWindow {
 
     // Свойство для версии приложения
     property string appVersion
+    property string buildQtVersion
     // Свойство-флаг для мобильной платформы
     property bool isMobile: false // Можно задать значение по умолчанию
     // Свойство-флаг для режима отладки
@@ -80,7 +81,13 @@ ApplicationWindow {
             id:testImage
             width: 82
             height: 82
-            source: "image://imagepack/animals/1"
+            source: "image://imagepack/__animals/1"
+        }
+        Image{
+            id:testImage2
+            width: 128
+            height: 82
+            source: "image://imagepack/memory_logo.png"
         }
     }
 
