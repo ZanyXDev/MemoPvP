@@ -2,6 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QtQml/QQmlContext>
 #include <QLibraryInfo>
+#include <QVariant>
+#include <QVariantMap>
 
 #ifdef QT_DEBUG
 #include <QtCore/QLoggingCategory>
@@ -87,6 +89,35 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
+
+    /**
+     * @brief В то время как синглтоны могут использоваться для передачи состояния на QML, они расточительны,
+     * когда состояние необходимо только для первоначальной настройки приложения.
+     * В этом случае часто можно использовать QQmlApplicationEngine:setInitialProperties.
+     */
+    bool isMobile = []() {
+#ifdef Q_OS_ANDROID
+        return true;
+#else
+        return false;
+#endif
+    }();
+
+    bool isDebugMode = []() {
+#ifdef QT_DEBUG
+        return true;
+#else
+        return false;
+#endif
+    }();
+
+    QString appVersion = QCoreApplication::applicationVersion();
+    QVariantMap initialProperties;
+    initialProperties["isMobile"] = QVariant::fromValue(isMobile);
+    initialProperties["isDebugMode"] = QVariant::fromValue(isDebugMode);
+    initialProperties["appVersion"] = QVariant::fromValue(appVersion);
+
+    engine.setInitialProperties(initialProperties);
     engine.loadFromModule("io.github.zanyxdev.memopvp", "Main");
 
     return QCoreApplication::exec();
