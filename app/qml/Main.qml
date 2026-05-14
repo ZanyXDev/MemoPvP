@@ -1,8 +1,10 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import io.github.zanyxdev.memopvp
 import io.github.zanyxdev.memopvp.myplugin
+import io.github.zanyxdev.memopvp.core
 import ImageProviderCore
 
 ApplicationWindow {
@@ -54,28 +56,19 @@ ApplicationWindow {
     Component.onCompleted: {
         if  (appWnd.isDebugMode){
             console.log(`[DEV.UI.Main] Info: ${buildQtVersion}`)
+            console.log(`[DEV.UI.Main] Core.boardModel: ${Core.boardModel}`)
         }
     }
 
     Column {
         anchors.fill: parent
-        width: 400; height: 300
+        // width: 400; height: 300
         anchors.centerIn: parent
-        spacing: 12
+        spacing: 4
 
         Text {
             text: "CurrentPackNAme: " + ImageDataManager.currentPackName
-            font.pixelSize: 24
-        }
-
-        Text { text: "Counter: " + counter.value; font.pixelSize: 24 }
-        Button {
-            text: "Increment"
-            onClicked: counter.value++
-        }
-        Button {
-            text: "Decrement"
-            onClicked: counter.value--
+            font.pixelSize: 12
         }
         Image{
             id:testImage
@@ -88,6 +81,43 @@ ApplicationWindow {
             width: 128
             height: 82
             source: "image://imagepack/memory_logo.png"
+        }
+        Button{
+            text: "hide"
+            onClicked: {
+                Core.setHideCard=false
+            }
+        }
+        GridLayout {
+            id: cellGridLayout
+            anchors.centerIn: parent // <-- центрируем сам GridLayout
+            columns:  4
+            rowSpacing: 4
+            columnSpacing:   4
+            Repeater{
+                id:gridRepeater
+                model: Core.boardModel
+                delegate: Rectangle{
+                    visible: model.cardVisible
+                    Layout.preferredWidth: 82
+                    Layout.preferredHeight: 82
+                    Layout.alignment: Qt.AlignHCenter
+                    Text {
+                        text: "id:"+model.pictureId
+                        font.pixelSize: 8
+                    }
+                    CheckBox{
+                        text: "State"
+                        checked: model.cardVisible
+                    }
+                    //frontImageSource: "qrc:/assets/images/packs/animals/animals_0.png"
+                    //frontImageSource:"image://imagepack/animals/1"
+                    //backImageSource: "qrc:/assets/images/cardbackside.jpg"
+
+                    //useShader: root.useShader
+
+                }
+            }
         }
     }
 
