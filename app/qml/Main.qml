@@ -16,7 +16,13 @@ ApplicationWindow {
     property var screenHeight: Screen.height
     property var screenAvailableWidth: Screen.desktopAvailableWidth
     property var screenAvailableHeight: Screen.desktopAvailableHeight
-    //property bool isDebugMode: AppConfig.isDebugMode
+
+    // Свойство для версии приложения
+    property string appVersion
+    // Свойство-флаг для мобильной платформы
+    property bool isMobile: false // Можно задать значение по умолчанию
+    // Свойство-флаг для режима отладки
+    property bool isDebugMode: false // Можно задать значение по умолчанию
 
     property FontLoader buiraFont: FontLoader {
         id: buiraFont
@@ -35,7 +41,7 @@ ApplicationWindow {
     minimumWidth: width
     // ----- Then comes the other properties. There's no predefined order to these.
     visible: true
-    visibility: Window.Windowed//(AppConfig.isMobile) ? Window.FullScreen : Window.Windowed
+    visibility: (isMobile) ? Window.FullScreen : Window.Windowed
     flags: Qt.Dialog
 
     // ----- Qt provided visual children
@@ -45,9 +51,9 @@ ApplicationWindow {
         color: "lightgrey"
     }
     Component.onCompleted: {
-        //if  (appWnd.isDebugMode){
-        //    console.log(`[DEV.UI.Main] Info: ${AppConfig.buildQtVersion}`)
-       // }
+        if  (appWnd.isDebugMode){
+            console.log(`[DEV.UI.Main] Info: ${buildQtVersion}`)
+        }
     }
 
     Column {
