@@ -36,9 +36,15 @@ QString ImageDataManager::getRealFileName(const QString &id)
     }
 
     QString packName = getPackNameFromPatch( id );
+
     if (packName.isEmpty()){
         // обычное изображение возвращаем путь
-        return m_images.filter(id).at( 0 );
+
+        qDebug() <<"id:"<<id <<" m_images.filter( id ).count():" << m_images.filter( id ).count();
+
+        if (m_images.filter( id ).count() > 0 ){
+            return m_images.filter(id).at(0);
+        }
     }else{
         // нашли изображение pack
         QStringList parts = id.split("/");
@@ -81,7 +87,7 @@ void ImageDataManager::updateCurrentPackData(int current)
 {
     if (current == -1 ) return;
 
-    if ( m_packsName.count() <= current){
+    if ( current <= m_packsName.count()){
         QString packNameModel = m_packsName.at( current );
         if ( packNameModel != m_currentPackName ){
 /// ToDO Что будет если произошла рассинхронизация m_packNamesModel и m_packsName
@@ -127,9 +133,9 @@ void ImageDataManager::getAllImagesFileName()
             m_images.append( filePath );
         }else{
             if ( !m_packsName.contains( _packName,Qt::CaseInsensitive )){
-                m_packsName.append( _packName );
-                m_packs.append( filePath );
+                m_packsName.append( _packName );               
             }
+            m_packs.append( filePath );
         }
     }
 
@@ -146,14 +152,21 @@ QString ImageDataManager::getPackNameFromPatch(const QString &path)
 {
     /**
      * @brief re Поиск названия бандла с картинками
+     * .*? чтобы поиск остановился сразу на первом встреченном __:
      *  __ — два символа подчёркивания.
      * ( начало захвата группы
      *  [^/]+ — один или более любых символов, кроме /.
      *  ) конец захвата группы
      *  / — обязательный слэш после текста.
      */
-    QRegularExpression re(".*__([^/]+)/.*");
+    QRegularExpression re(".*?__([^/]+)/.*");
+
     QRegularExpressionMatch match = re.match( path );
-    return  match.captured(1);
+    if (match.hasMatch()) {
+        return match.captured(1); // Вернет "animals" или "emoji"
+    } else {
+        qWarning() << "Совпадение не найдено для пути:" << path;
+        return QString();
+    }
 }
 
